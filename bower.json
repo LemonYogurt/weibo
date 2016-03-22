@@ -1,0 +1,19 @@
+{
+  "name": "weibo",
+  "homepage": "https://github.com/LemonYogurt/weibo",
+  "authors": [
+    "liuchao <liuchao@goyoo.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/libs",
+    "test",
+    "tests"
+  ]
+}
