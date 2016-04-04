@@ -35,8 +35,16 @@ if ($password !== $realpass) {
 }
 
 // 设置cookie，登录成功
+
+// 这个函数是在lib.php中定义的
+$authsecret = randsecret();
+// 我们还要进行验证，所以，把字符串放在redis里面，
+$r->set('user:userid:'.$userid.':authsecret', $authsecret);
+
 setcookie('username', $username);
 setcookie('userid', $userid);
+setcookie('authsecret', $authsecret);
+
 // 设置完成后，将页面转到home.php
 header('location: home.php');
 include('footer.php');
