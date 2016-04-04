@@ -40,32 +40,11 @@ $r->set('post:postid'.$postid.':content', $content);
 所以在存的时候，完全可以把username存进去
 
 当发布一条微博的时候，就把用户id、用户名、发布时间、内容都写到hash结构中去。
-
-
 $r->hmset('post:postid:'.$postid, array('userid'=>$user['userid'], 'username'=>$user['username'], 'time'=>time(), 'content'=>$content));
-
-// 把自己发的微博维护在一个有序集合里
-// 而且这个有序集合还不用特别大
-// zadd有序集合发布的时候，score权重就用postid来表示
-// key score value score value
-// 我们只要前20个，因为这20个就是为了让它的粉丝拉取信息用的，没有必要维护太多
-// 你好几个月没有上微博了，你看到的也只是前20条
-$r->zadd('starpost:userid:'.$user['userid'], $postid, $postid);
-if ($r->zcard('starpost:userid:'.$user['userid']) > 20) {
-    // 如果这里面存的值大于20了，就把最旧的哪一条删除
-    // 将第0名，删除
-    // 现在达到的效果就是，我有一个有序集合，就存的是最新的20条
-    // 剩下的工作就交给粉丝来工作了
-    $r->zremrangebyrank('starpost:userid:'.$user['userid'], 0, 0);
-}
-
-// 然后给它删掉一些
-
-
 // 现在用hash结构来搞定它
 
 // 回到home.php
-/*
+
 // 把微博推给自己的粉丝
 // follower表：用户是别人的粉丝
 // following表：别人是用户的粉丝
@@ -95,16 +74,6 @@ foreach ($fans as $fansid) {
     这样的话，你就算去拉这个数据，也无非是循环两千次。
 
     所以，要更换它的模型。
-}
-*/
-
-// 把自己的微博id，放到一个链表里，1000个，自己看自己的微博用
-// 1000个的旧微博，放到mysql中
-
-$r->lpush('mypost:userid:'.$user['userid'], $postid);
-// 如果超出了1000，正好把最右边的单元拿出来，放到global链表的最左侧
-if ($r->llen('mypost:userid:'.$user['userid']) > 1000) {
-    $r->rpoplpush('mypost:userid:'.$user['userid'], 'global:store');
 }
 
 header('location: home.php');
